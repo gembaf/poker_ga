@@ -1,12 +1,21 @@
-compile_strategy:
-	gcc -O3 -Ilib -oPokerExec -DTYPE=05-05 -DCHNG=5 -DTAKE=5 lib/CardLib.c lib/PokerExec.c PokerOpe.c -Wno-unused-result
+LOG = _tmp
+CHNG = 6
+TAKE = 6
+TRY = 10000
+VISIBLE = 0 # true = 1, false = 0
 
-run:
-	./PokerExec _hoge 10000 Stock.ini 0
+run: PokerExec Stock.ini
+	./PokerExec $(LOG) $(TRY) Stock.ini $(VISIBLE)
 
-compile_stock:
+PokerExec: lib/CardLib.c lib/PokerExec.c PokerOpe.c
+	gcc -O3 -Ilib -oPokerExec -DCHNG=$(CHNG) -DTAKE=$(TAKE) lib/CardLib.c lib/PokerExec.c PokerOpe.c -Wno-unused-result
+
+Stock.ini: StockInit
+	./StockInit $(TRY) > Stock.ini
+
+StockInit: lib/CardLib.c lib/StockInit.c
 	gcc -Ilib -oStockInit lib/CardLib.c lib/StockInit.c
 
-create_stock:
-	./StockInit 10000 > Stock.ini
+clean:
+	rm -rf PokerExec StockInit Stock.ini
 
