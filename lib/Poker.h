@@ -81,7 +81,6 @@ void arr_output(int arr[], int n);
 //--------------------------------------------------------------------
 
 void card_show(int cd[], int n);
-void card_show_log(FILE *fp, int cd[], int n);
 char *card_str(int id);
 int card_id(char *str);
 
@@ -98,7 +97,6 @@ void card_stock(int stock[], FILE *fp);
 double poker_exec(FILE *fp, int point[]);
 int poker_take(const int stock[], int tk, int used[], int *us);
 void take_show(int st[][HNUM], int ope[], int fd[], int cg, int tp);
-void take_log(FILE *fp, int st[][HNUM], int ope[], int fd[], int cg, int tp);
 #ifdef TAKE
 void result_show(int point[][TAKE]);
 #endif

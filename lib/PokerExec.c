@@ -224,7 +224,7 @@ int poker_take(const int stock[], int tk, int used[], int *us)
     my_printf_i(NULL, "テイク得点 : %4d\n", take_p*Take_Weight[tk]);
     break;
   case 0:
-    take_log(NULL, state, ope, field, cg, take_p);   // テイクのログ
+    take_show(state, ope, field, cg, take_p);   // テイクのログ
     //----  テイク得点のログへの保存
     printf("テイク得点 : %3d\n", take_p);
     break;
@@ -250,28 +250,9 @@ void take_show(int st[][HNUM], int ope[], int fd[], int cg, int tp)
     //----  手札の表示
     my_printf_i(NULL, "[%d] ", k); 
     card_show(st[k], HNUM); 
-    card_show_log(NULL, st[k], HNUM);
     //----  捨札の表示
     if ( k < cg ) { my_printf_c(NULL, " >%s", card_str(ope[k])); }
     my_printf(NULL, "\n");
-  }
-}
-
-//--------------------------------------------------------------------
-//  テイクのログファイルへの書出し
-//--------------------------------------------------------------------
-
-void take_log(FILE *fp, int st[][HNUM], int ope[], int fd[], int cg, int tp) 
-{
-  int k;
-  int p;
-  for ( k = 0; k <= cg; k++ ) {
-    //----  手札の表示
-    printf("[%d] ", k); 
-    card_show(st[k], HNUM); 
-    //----  捨札の表示
-    if ( k < cg ) { printf(" >%s", card_str(ope[k])); }
-    printf("\n");
   }
 }
 
