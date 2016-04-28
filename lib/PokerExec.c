@@ -103,7 +103,6 @@ int main(int argc, char *argv[])
 
   //----  乱数の初期化
   srand(time(NULL));
-  puts("");
 
   //----  トライ回数だけのゲームの反復
   total = 0.0;
@@ -116,8 +115,8 @@ int main(int argc, char *argv[])
 
   //----  平均点の出力
   ave = (double) total / Trial;
-  my_printf(NULL, "\n");
-  my_printf_d(NULL, "平均得点 :  %lf\n", ave);
+  printf("\n");
+  printf("平均得点 :  %lf\n", ave);
 
   //----  終了
   return 0;
@@ -151,18 +150,12 @@ double poker_exec(FILE *fp, int point[])
     point[tk] = poker_take(stock, tk, used, &us);
     try_p += point[tk] * Take_Weight[tk];
   }
-  
-  switch ( Disp_Mode ) {
-  case 1:
-    // トライ得点の表示(ログ保存付)
-    my_printf_i(NULL, "トライ得点 : %4f\n", try_p);
-    break;
-  case 0:
-    // トライ得点のログへの保存
+
+  // トライ得点の表示
+  if ( Disp_Mode ) {
     printf("トライ得点 : %4f\n", try_p);
-    break;
   }
-  
+
   return try_p;
 }
 
@@ -216,20 +209,12 @@ int poker_take(const int stock[], int tk, int used[], int *us)
   }
 
   //----  テイクの経過表示
-  switch ( Disp_Mode ) {
-  case 1:
-    take_show(state, ope, field, cg, take_p); // テイクの表示
-    //----  テイク得点の表示
-    my_printf_i(NULL, "テイク素点 : %4d\n", take_p);
-    my_printf_i(NULL, "テイク得点 : %4d\n", take_p*Take_Weight[tk]);
-    break;
-  case 0:
-    take_show(state, ope, field, cg, take_p);   // テイクのログ
-    //----  テイク得点のログへの保存
-    printf("テイク得点 : %3d\n", take_p);
-    break;
+  if ( Disp_Mode ) {
+    take_show(state, ope, field, cg, take_p);
+    printf("テイク素点 : %4d\n", take_p);
+    printf("テイク得点 : %4f\n", take_p*Take_Weight[tk]);
   }
-  
+
   return take_p;
 }
 
@@ -248,11 +233,11 @@ void take_show(int st[][HNUM], int ope[], int fd[], int cg, int tp)
   int p;
   for ( k = 0; k <= cg; k++ ) {
     //----  手札の表示
-    my_printf_i(NULL, "[%d] ", k); 
+    printf("[%d] ", k); 
     card_show(st[k], HNUM); 
     //----  捨札の表示
-    if ( k < cg ) { my_printf_c(NULL, " >%s", card_str(ope[k])); }
-    my_printf(NULL, "\n");
+    if ( k < cg ) { printf(" >%s", card_str(ope[k])); }
+    printf("\n");
   }
 }
 
@@ -305,64 +290,64 @@ void result_show(int point[][TAKE])
   puts("");
 
   //----  結果表のテイク番号の表示
-  my_printf(NULL, "        役名         ");
+  printf("        役名         ");
   for( i = 0; i < TAKE; i++ ) {
-    my_printf_i(NULL, "| take%d", i+1);
+    printf("| take%d", i+1);
   }
-  my_printf(NULL, "|  合計  \n");
+  printf("|  合計  \n");
   //-----  結果表の区切線の表示
-  my_printf(NULL, "---------------------");
+  printf("---------------------");
   for( i = 0; i <= TAKE; i++ ) {
-    my_printf(NULL, "+------");
+    printf("+------");
   }
-  my_printf(NULL, "\n");
+  printf("\n");
 
   for ( i = POINT_MIN; i <= POINT_MAX; i++ ) {
     //----  結果表の役名の表示
     switch( i ) {
-      case 9: my_printf(NULL, "ロイヤルストレート   "); break;
-      case 8: my_printf(NULL, "ストレートフラッシュ "); break;
-      case 7: my_printf(NULL, "フォーカード         "); break;
-      case 6: my_printf(NULL, "フルハウス           "); break;
-      case 5: my_printf(NULL, "フラッシュ           "); break;
-      case 4: my_printf(NULL, "ストレート           "); break;
-      case 3: my_printf(NULL, "スリーカード         "); break;
-      case 2: my_printf(NULL, "ツーペア             "); break;
-      case 1: my_printf(NULL, "ワンペア             "); break;
-      case 0: my_printf(NULL, "ノーペア             "); break;
+      case 9: printf("ロイヤルストレート   "); break;
+      case 8: printf("ストレートフラッシュ "); break;
+      case 7: printf("フォーカード         "); break;
+      case 6: printf("フルハウス           "); break;
+      case 5: printf("フラッシュ           "); break;
+      case 4: printf("ストレート           "); break;
+      case 3: printf("スリーカード         "); break;
+      case 2: printf("ツーペア             "); break;
+      case 1: printf("ワンペア             "); break;
+      case 0: printf("ノーペア             "); break;
       default : break;
     }
     for ( j = 0; j < TAKE; j++ ) {
       //----  結果表の役頻度の表示
-      my_printf_i(NULL, "|%6d", deg[i][j]);
+      printf("|%6d", deg[i][j]);
       if( j == TAKE-1 ) {
-        my_printf_i(NULL, "|%6d", sum[i]);
+        printf("|%6d", sum[i]);
       }
     }
-    my_printf(NULL, "\n");
+    printf("\n");
   }
 
   //-----  結果表の区切線の表示
-  my_printf(NULL, "---------------------");
+  printf("---------------------");
   for( i = 0; i <= TAKE; i++ ) {
-    my_printf(NULL, "+------");
+    printf("+------");
   }
-  my_printf(NULL, "\n");
+  printf("\n");
 
   //----  
-  my_printf(NULL, "単純素点             ");
+  printf("単純素点             ");
   for ( j = 0; j < TAKE; j++ ) {
-    my_printf_d(NULL, "|%6.2f", scr[j] / Trial);
+    printf("|%6.2f", scr[j] / Trial);
   }
-  my_printf(NULL, "|\n");
+  printf("|\n");
 
   //----  
-  my_printf(NULL, "傾斜得点             ");
+  printf("傾斜得点             ");
   for ( j = 0; j < TAKE; j++ ) {
-    my_printf_d(NULL, "|%6.2f", scr[j] * Take_Weight[j]/Trial);
+    printf("|%6.2f", scr[j] * Take_Weight[j]/Trial);
     total += scr[j] * Take_Weight[j];
   }
-  my_printf_d(NULL, "|%6.2f\n", total / Trial);
+  printf("|%6.2f\n", total / Trial);
 }
 
 
@@ -467,33 +452,5 @@ int poker_point_straight(int num[], int p)
 
   //----  
   return 0;
-}
-
-//--------------------------------------------------------------------
-//  標準出力とファイル出力
-//--------------------------------------------------------------------
-
-//----  標準出力＋ファイル出力
-void my_printf(FILE *fp, char st[]) 
-{
-  printf("%s", st);
-}
-
-//----  標準出力＋ファイル出力(char型の配列)
-void my_printf_c(FILE *fp, char st[], char x[]) 
-{
-  printf(" >%s", x);
-}
-
-//----  標準出力＋ファイル出力(int型)
-void my_printf_i(FILE *fp, char st[], int x) 
-{
-  printf(st, x);
-}
-
-//----  標準出力＋ファイル出力(double型)
-void my_printf_d(FILE *fp, char st[], double x) 
-{
-  printf(st, x);
 }
 
