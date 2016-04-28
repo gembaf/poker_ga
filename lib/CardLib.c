@@ -17,12 +17,10 @@
 //  カードの表示子
 //--------------------------------------------------------------------
 
-char *card_str(int id) 
+char *card_str(int id)
 {
-  //char *str = "   ";
   char *str;
   str = (char*)malloc(sizeof(char)*3);
-  if ( str == NULL ) { puts("error"); exit(1); }
   str[0] = SUITE[id / 13];
   str[1] = NUMBER[id % 13];
   str[2] = '\0';
@@ -33,15 +31,15 @@ char *card_str(int id)
 //  カードの識別子
 //--------------------------------------------------------------------
 
-int card_id(char *str) 
+int card_id(char *str)
 {
   int num;
   int sut;
   int k;
-  for ( k = 0; k < 4; k++ ) { 
+  for ( k = 0; k < 4; k++ ) {
     if ( SUITE[0] == str[0] ) { sut = k; }
   }
-  for ( k = 0; k < 13; k++ ) { 
+  for ( k = 0; k < 13; k++ ) {
     if ( NUMBER[0] == str[0] ) { num = k; }
   }
   return sut * 13 + num;
@@ -56,13 +54,13 @@ int card_id(char *str)
 //  山札の生成
 //--------------------------------------------------------------------
 
-void card_stock(int stock[], FILE *fp) 
+void card_stock(int stock[], FILE *fp)
 {
   char line[CNUM*3];
   char * pt;
   int card;
   int i = 0;
-  
+
   pt = fgets(line, CNUM*3, fp);
   if ( pt == NULL ) {
     puts("山札の読込に失敗しました。");
@@ -70,11 +68,9 @@ void card_stock(int stock[], FILE *fp)
   }
   while ( *pt != '\n' && *pt != '\0' ) {
     card = strtol(pt, &pt, 10);
-//printf("%d\n", card);
     stock[i++] = card;
   }
 }
-
 
 //====================================================================
 //  表示関数
@@ -84,7 +80,7 @@ void card_stock(int stock[], FILE *fp)
 //  手札の表示
 //--------------------------------------------------------------------
 
-void card_show(int cd[], int n) 
+void card_show(int cd[], int n)
 {
   int k;
   for ( k = 0; k < n; k++ ) {
@@ -105,8 +101,8 @@ void qrand(int seq[], int n)
 {
   int k, p;
   for ( k = 0; k < n; k++ ) { seq[k] = k; }
-  for ( k = 1; k < n; k++ ) { 
-    p = irand(k+1); arr_swap(seq, k, p); 
+  for ( k = 1; k < n; k++ ) {
+    p = irand(k+1); arr_swap(seq, k, p);
   }
 }
 
@@ -114,7 +110,7 @@ void qrand(int seq[], int n)
 //  整数乱数の発生
 //--------------------------------------------------------------------
 
-int irand(int n) 
+int irand(int n)
 {
   return (int) (n * frand());
 }
@@ -123,11 +119,10 @@ int irand(int n)
 //  実数乱数の発生
 //--------------------------------------------------------------------
 
-double frand(void) 
+double frand(void)
 {
   return rand() / (RAND_MAX + 1.0);
 }
-
 
 //====================================================================
 //  配列の基本処理
@@ -137,7 +132,7 @@ double frand(void)
 //  配列の要素交換
 //--------------------------------------------------------------------
 
-void arr_swap(int arr[], int p1, int p2) 
+void arr_swap(int arr[], int p1, int p2)
 {
   int t;
   t = arr[p1]; arr[p1] = arr[p2]; arr[p2] = t;
@@ -147,7 +142,7 @@ void arr_swap(int arr[], int p1, int p2)
 //  配列のコピー
 //--------------------------------------------------------------------
 
-void arr_copy(int arr0[], const int arr1[], int n) 
+void arr_copy(int arr0[], const int arr1[], int n)
 {
   int k;
   for ( k = 0; k < n; k++ ) { arr0[k] = arr1[k]; }
@@ -157,9 +152,10 @@ void arr_copy(int arr0[], const int arr1[], int n)
 //  配列の出力
 //--------------------------------------------------------------------
 
-void arr_output(int arr[], int n) 
+void arr_output(int arr[], int n)
 {
   int k;
   for ( k = 0; k < n; k++ ) { printf("%2d ", arr[k]); }
   puts("");
 }
+

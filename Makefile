@@ -7,11 +7,8 @@ VISIBLE = 0 # true = 1, false = 0
 run: PokerExec Stock.ini
 	./PokerExec $(TRY) Stock.ini $(VISIBLE)
 
-PokerExec: lib/CardLib.c lib/PokerExec.c PokerOpe.c
-	gcc -O3 -Ilib -oPokerExec -DIGNORE_LOG -DCHNG=$(CHNG) -DTAKE=$(TAKE) lib/CardLib.c lib/PokerExec.c PokerOpe.c -Wno-unused-result
-
-PokerExecLog: lib/CardLib.c lib/PokerExec.c PokerOpe.c
-	gcc -O3 -Ilib -oPokerExec -DCHNG=$(CHNG) -DTAKE=$(TAKE) lib/CardLib.c lib/PokerExec.c PokerOpe.c -Wno-unused-result
+PokerExec: lib/CardLib.c lib/PokerExec.c lib/Poker.c PokerOpe.c
+	gcc -O3 -Ilib -oPokerExec -DCHNG=$(CHNG) -DTAKE=$(TAKE) lib/CardLib.c lib/Poker.c lib/PokerExec.c PokerOpe.c -Wno-unused-result
 
 Stock.ini: StockInit
 	./StockInit $(TRY) > Stock.ini
