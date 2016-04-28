@@ -1,13 +1,18 @@
-LOG = _tmp
+INSTANCE = _tmp
+
 CHNG = 6
 TAKE = 6
 TRY = 10000
+
 VISIBLE = 0 # true = 1, false = 0
 
 run: PokerExec Stock.ini
-	./PokerExec $(LOG) $(TRY) Stock.ini $(VISIBLE)
+	./PokerExec $(INSTANCE) $(TRY) Stock.ini $(VISIBLE)
 
 PokerExec: lib/CardLib.c lib/PokerExec.c PokerOpe.c
+	gcc -O3 -Ilib -oPokerExec -DIGNORE_LOG -DCHNG=$(CHNG) -DTAKE=$(TAKE) lib/CardLib.c lib/PokerExec.c PokerOpe.c -Wno-unused-result
+
+PokerExecLog: lib/CardLib.c lib/PokerExec.c PokerOpe.c
 	gcc -O3 -Ilib -oPokerExec -DCHNG=$(CHNG) -DTAKE=$(TAKE) lib/CardLib.c lib/PokerExec.c PokerOpe.c -Wno-unused-result
 
 Stock.ini: StockInit

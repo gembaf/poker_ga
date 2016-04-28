@@ -104,8 +104,10 @@ int main(int argc, char *argv[])
   }
 
   //----  ファイルの作成
+#ifndef IGNORE_LOG
   make_dir();    // ディレクトリ
   make_log();    // ログファイル
+#endif
 
   //----  乱数の初期化
   srand(time(NULL));
@@ -126,9 +128,11 @@ int main(int argc, char *argv[])
   my_printf_d(Result_Log, "平均得点 :  %lf\n", ave);
 
   //----  ファイルのクローズ
+#ifndef IGNORE_LOG
   fclose(fp);
   fclose(Game_Log);
   fclose(Result_Log);
+#endif
 
   //----  終了
   return 0;
@@ -170,7 +174,9 @@ double poker_exec(FILE *fp, int point[])
     break;
   case 0:
     // トライ得点のログへの保存
+#ifndef IGNORE_LOG
     fprintf(Game_Log, "トライ得点 : %4f\n", try_p);
+#endif
     break;
   }
   
@@ -235,9 +241,11 @@ int poker_take(const int stock[], int tk, int used[], int *us)
     my_printf_i(Game_Log, "テイク得点 : %4d\n", take_p*Take_Weight[tk]);
     break;
   case 0:
+#ifndef IGNORE_LOG
     take_log(Game_Log, state, ope, field, cg, take_p);   // テイクのログ
     //----  テイク得点のログへの保存
     fprintf(Game_Log, "テイク得点 : %3d\n", take_p);
+#endif
     break;
   }
   
@@ -579,27 +587,35 @@ void make_log(void)
 void my_printf(FILE *fp, char st[]) 
 {
   printf("%s", st);
+#ifndef IGNORE_LOG
   fprintf(fp, "%s", st);
+#endif
 }
 
 //----  標準出力＋ファイル出力(char型の配列)
 void my_printf_c(FILE *fp, char st[], char x[]) 
 {
   printf(" >%s", x);
+#ifndef IGNORE_LOG
   fprintf(fp, " >%s", x);
+#endif
 }
 
 //----  標準出力＋ファイル出力(int型)
 void my_printf_i(FILE *fp, char st[], int x) 
 {
   printf(st, x);
+#ifndef IGNORE_LOG
   fprintf(fp, st, x);
+#endif
 }
 
 //----  標準出力＋ファイル出力(double型)
 void my_printf_d(FILE *fp, char st[], double x) 
 {
   printf(st, x);
+#ifndef IGNORE_LOG
   fprintf(fp, st, x);
+#endif
 }
 

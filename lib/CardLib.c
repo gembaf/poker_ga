@@ -125,7 +125,9 @@ void card_show_log(FILE *fp, int cd[], int n)
   int k;
   for ( k = 0; k < n; k++ ) {
     if ( cd[k] < 0 ) { continue; }
+#ifndef IGNORE_LOG
     fprintf(fp, "%s ", card_str(cd[k]));
+#endif
   }
 }
 
