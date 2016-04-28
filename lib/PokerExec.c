@@ -101,12 +101,6 @@ int main(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
-  //----  ファイルの作成
-#ifndef IGNORE_LOG
-  make_dir();    // ディレクトリ
-  make_log();    // ログファイル
-#endif
-
   //----  乱数の初期化
   srand(time(NULL));
   puts("");
@@ -124,13 +118,6 @@ int main(int argc, char *argv[])
   ave = (double) total / Trial;
   my_printf(NULL, "\n");
   my_printf_d(NULL, "平均得点 :  %lf\n", ave);
-
-  //----  ファイルのクローズ
-#ifndef IGNORE_LOG
-  fclose(fp);
-  fclose(NULL);
-  fclose(NULL);
-#endif
 
   //----  終了
   return 0;
@@ -172,9 +159,7 @@ double poker_exec(FILE *fp, int point[])
     break;
   case 0:
     // トライ得点のログへの保存
-#ifndef IGNORE_LOG
-    fprintf(NULL, "トライ得点 : %4f\n", try_p);
-#endif
+    printf("トライ得点 : %4f\n", try_p);
     break;
   }
   
@@ -239,11 +224,9 @@ int poker_take(const int stock[], int tk, int used[], int *us)
     my_printf_i(NULL, "テイク得点 : %4d\n", take_p*Take_Weight[tk]);
     break;
   case 0:
-#ifndef IGNORE_LOG
     take_log(NULL, state, ope, field, cg, take_p);   // テイクのログ
     //----  テイク得点のログへの保存
-    fprintf(NULL, "テイク得点 : %3d\n", take_p);
-#endif
+    printf("テイク得点 : %3d\n", take_p);
     break;
   }
   
@@ -284,12 +267,11 @@ void take_log(FILE *fp, int st[][HNUM], int ope[], int fd[], int cg, int tp)
   int p;
   for ( k = 0; k <= cg; k++ ) {
     //----  手札の表示
-    fprintf(NULL, "[%d] ", k); 
-    //card_show(st[k], HNUM); 
-    card_show_log(NULL, st[k], HNUM);
+    printf("[%d] ", k); 
+    card_show(st[k], HNUM); 
     //----  捨札の表示
-    if ( k < cg ) { fprintf(NULL, " >%s", card_str(ope[k])); }
-    fprintf(NULL, "\n");
+    if ( k < cg ) { printf(" >%s", card_str(ope[k])); }
+    printf("\n");
   }
 }
 
@@ -506,77 +488,6 @@ int poker_point_straight(int num[], int p)
   return 0;
 }
 
-
-//====================================================================
-//  ファイル処理
-//====================================================================
-
-//--------------------------------------------------------------------
-//  ログディレクトリの作成
-//--------------------------------------------------------------------
-
-void make_dir(void) 
-{
-  char command[COMM_LEN];         // システムコマンド
-  DIR *log_dir;                   // ログディレクトリ
-
-  //----  ログディレクトリへのパス
-  // strcpy(Dir, "..\\..\\log\\");
-  strcpy(Dir, "./log/");
-  strcat(Dir, Name);
-
-  //----  ログディレクトリの有無
-  if ( (log_dir = opendir(Dir)) == NULL ) {
-    //----  ログディレクトリの作成(mdコマンドの呼出)
-    strcpy(command, "mkdir ");
-    strcat(command, Dir);
-    system(command);
-  }
-}
-
-//--------------------------------------------------------------------
-//  ログファイルの作成
-//--------------------------------------------------------------------
-
-void make_log(void) 
-{
-  char path1[FILE_NAME_LEN];            // Game.logへのパス
-  char path2[FILE_NAME_LEN];            // Result.txtへのパス
-  char path3[FILE_NAME_LEN];            // Stock.iniへのパス
-  char command[COMM_LEN];               // システムコマンド
-
-  //---- Game.logへのパスを作成
-  strcpy(path1, Dir); 
-  strcat(path1, "/Game.log");
-
-  //---- Result.txtへのパスを作成
-  strcpy(path2, Dir); 
-  strcat(path2, "/Result.txt");
-
-  //---- Stock.iniへのパスを作成
-  strcpy(path3, Dir); 
-  strcat(path3, "/Stock.ini"); 
-
-  // //---- Game.logのオープン
-  // if( (NULL = fopen(path1, "w")) == NULL ) {
-  //   printf("Game.logをオープンできない\n");
-  //   exit(1);
-  // }
-
-  // //---- Result.txtのオープン
-  // if( (NULL = fopen(path2, "w")) == NULL ) {
-  //   printf("Result.txtをオープンできない\n");
-  //   exit(1);
-  // }
-
-  //---- Stock.iniのコピー(copyコマンドの呼出)
-  strcpy(command, "cp ");
-  strcat(command, Stck);
-  strcat(command, " ");
-  strcat(command, path3);
-  system(command);
-}
-
 //--------------------------------------------------------------------
 //  標準出力とファイル出力
 //--------------------------------------------------------------------
@@ -585,35 +496,23 @@ void make_log(void)
 void my_printf(FILE *fp, char st[]) 
 {
   printf("%s", st);
-#ifndef IGNORE_LOG
-  fprintf(fp, "%s", st);
-#endif
 }
 
 //----  標準出力＋ファイル出力(char型の配列)
 void my_printf_c(FILE *fp, char st[], char x[]) 
 {
   printf(" >%s", x);
-#ifndef IGNORE_LOG
-  fprintf(fp, " >%s", x);
-#endif
 }
 
 //----  標準出力＋ファイル出力(int型)
 void my_printf_i(FILE *fp, char st[], int x) 
 {
   printf(st, x);
-#ifndef IGNORE_LOG
-  fprintf(fp, st, x);
-#endif
 }
 
 //----  標準出力＋ファイル出力(double型)
 void my_printf_d(FILE *fp, char st[], double x) 
 {
   printf(st, x);
-#ifndef IGNORE_LOG
-  fprintf(fp, st, x);
-#endif
 }
 
