@@ -1,27 +1,4 @@
 //====================================================================
-//  工学部「情報環境実験２」(富永)  C言語プログラミング  例題
-//  ポーカーゲームの戦略  ゲーム本体
-//--------------------------------------------------------------------
-//  Poker  PokerExec.c
-//  WinXP DOS  Borland C/C++ 5.5
-//--------------------------------------------------------------------
-//  富永研究室  tominaga 富永浩之
-//  2013.10.22
-//====================================================================
-
-
-//====================================================================
-//  仕様
-//====================================================================
-
-/*--------------------------------------------------------------------
-
-減一型(手札から1枚を捨ててから、山札から1枚を加える)
-
----------------------------------------------------------------------*/
-
-
-//====================================================================
 //  事前処理
 //====================================================================
 
@@ -38,31 +15,15 @@
 
 #include "Poker.h"     // 課題ライブラリのヘッダファイル(相対パス指定)
 
-
 //====================================================================
 //  大域宣言
 //====================================================================
 
-//--------------------------------------------------------------------
-//  関数宣言
-//--------------------------------------------------------------------
-
-// ヘッダファイルPoker.hをインクルード
-
-//--------------------------------------------------------------------
-//  大域変数
-//--------------------------------------------------------------------
-
-char Name[GAME_NAME_LEN];         // ゲーム名
 int Trial;                        // トライ回数
 char Stck[FILE_NAME_LEN];         // 山札ファイル
 int Disp_Mode;                    // 表示モード
-char Dir[DIR_NAME_LEN];           // ログディレクトリへのパス名
-FILE *Game_Log;                   // ゲームログへのファイルポインタ
-FILE *Result_Log;                     // 結果ログへのファイルポインタ
 int Hand_Value[10] = {P0, P1, P2, P3, P4, P5, P6, P7, P8, P9};
 double Take_Weight[10] = {1.0, 1.0, 1.5, 1.5, 2.0, 2.0};
-
 
 //====================================================================
 //  本体関数
@@ -78,17 +39,16 @@ int main(int argc, char *argv[])
   int k;                    // 反復変数
 
   //----  コマンド引数の確認
-  if ( argc < 5 ) {
+  if ( argc < 4 ) {
     puts("ERROR : コマンド引数が不正です。");
-    puts("実行パラメタ : ゲーム名 トライ回数 山札ファイル 表示モード");
+    puts("実行パラメタ : トライ回数 山札ファイル 表示モード");
     exit(EXIT_FAILURE);
   }
 
   //----  コマンド引数の格納
-  strcpy(Name, argv[1]);    // ゲーム名
-  Trial = atoi(argv[2]);    // トライ回数
-  strcpy(Stck, argv[3]);    // 山札ファイル
-  Disp_Mode = atoi(argv[4]);     // 表示モード
+  Trial = atoi(argv[1]);    // トライ回数
+  strcpy(Stck, argv[2]);    // 山札ファイル
+  Disp_Mode = atoi(argv[3]);     // 表示モード
 
   //----  トライ回数の確認
   if ( Trial > GNUM ) {
@@ -103,15 +63,8 @@ int main(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
-  //----  ファイルの作成
-#ifndef IGNORE_LOG
-  make_dir();    // ディレクトリ
-  make_log();    // ログファイル
-#endif
-
   //----  乱数の初期化
   srand(time(NULL));
-  puts("");
 
   //----  トライ回数だけのゲームの反復
   total = 0.0;
@@ -124,15 +77,8 @@ int main(int argc, char *argv[])
 
   //----  平均点の出力
   ave = (double) total / Trial;
-  my_printf(Result_Log, "\n");
-  my_printf_d(Result_Log, "平均得点 :  %lf\n", ave);
-
-  //----  ファイルのクローズ
-#ifndef IGNORE_LOG
-  fclose(fp);
-  fclose(Game_Log);
-  fclose(Result_Log);
-#endif
+  printf("\n");
+  printf("平均得点 :  %lf\n", ave);
 
   //----  終了
   return 0;
@@ -166,20 +112,12 @@ double poker_exec(FILE *fp, int point[])
     point[tk] = poker_take(stock, tk, used, &us);
     try_p += point[tk] * Take_Weight[tk];
   }
-  
-  switch ( Disp_Mode ) {
-  case 1:
-    // トライ得点の表示(ログ保存付)
-    my_printf_i(Game_Log, "トライ得点 : %4f\n", try_p);
-    break;
-  case 0:
-    // トライ得点のログへの保存
-#ifndef IGNORE_LOG
-    fprintf(Game_Log, "トライ得点 : %4f\n", try_p);
-#endif
-    break;
+
+  // トライ得点の表示
+  if ( Disp_Mode ) {
+    printf("トライ得点 : %4f\n", try_p);
   }
-  
+
   return try_p;
 }
 
@@ -233,22 +171,12 @@ int poker_take(const int stock[], int tk, int used[], int *us)
   }
 
   //----  テイクの経過表示
-  switch ( Disp_Mode ) {
-  case 1:
-    take_show(state, ope, field, cg, take_p); // テイクの表示
-    //----  テイク得点の表示
-    my_printf_i(Game_Log, "テイク素点 : %4d\n", take_p);
-    my_printf_i(Game_Log, "テイク得点 : %4d\n", take_p*Take_Weight[tk]);
-    break;
-  case 0:
-#ifndef IGNORE_LOG
-    take_log(Game_Log, state, ope, field, cg, take_p);   // テイクのログ
-    //----  テイク得点のログへの保存
-    fprintf(Game_Log, "テイク得点 : %3d\n", take_p);
-#endif
-    break;
+  if ( Disp_Mode ) {
+    take_show(state, ope, field, cg, take_p);
+    printf("テイク素点 : %4d\n", take_p);
+    printf("テイク得点 : %4f\n", take_p*Take_Weight[tk]);
   }
-  
+
   return take_p;
 }
 
@@ -267,31 +195,11 @@ void take_show(int st[][HNUM], int ope[], int fd[], int cg, int tp)
   int p;
   for ( k = 0; k <= cg; k++ ) {
     //----  手札の表示
-    my_printf_i(Game_Log, "[%d] ", k); 
+    printf("[%d] ", k); 
     card_show(st[k], HNUM); 
-    card_show_log(Game_Log, st[k], HNUM);
     //----  捨札の表示
-    if ( k < cg ) { my_printf_c(Game_Log, " >%s", card_str(ope[k])); }
-    my_printf(Game_Log, "\n");
-  }
-}
-
-//--------------------------------------------------------------------
-//  テイクのログファイルへの書出し
-//--------------------------------------------------------------------
-
-void take_log(FILE *fp, int st[][HNUM], int ope[], int fd[], int cg, int tp) 
-{
-  int k;
-  int p;
-  for ( k = 0; k <= cg; k++ ) {
-    //----  手札の表示
-    fprintf(Game_Log, "[%d] ", k); 
-    //card_show(st[k], HNUM); 
-    card_show_log(Game_Log, st[k], HNUM);
-    //----  捨札の表示
-    if ( k < cg ) { fprintf(Game_Log, " >%s", card_str(ope[k])); }
-    fprintf(Game_Log, "\n");
+    if ( k < cg ) { printf(" >%s", card_str(ope[k])); }
+    printf("\n");
   }
 }
 
@@ -344,64 +252,64 @@ void result_show(int point[][TAKE])
   puts("");
 
   //----  結果表のテイク番号の表示
-  my_printf(Result_Log, "        役名         ");
+  printf("        役名         ");
   for( i = 0; i < TAKE; i++ ) {
-    my_printf_i(Result_Log, "| take%d", i+1);
+    printf("| take%d", i+1);
   }
-  my_printf(Result_Log, "|  合計  \n");
+  printf("|  合計  \n");
   //-----  結果表の区切線の表示
-  my_printf(Result_Log, "---------------------");
+  printf("---------------------");
   for( i = 0; i <= TAKE; i++ ) {
-    my_printf(Result_Log, "+------");
+    printf("+------");
   }
-  my_printf(Result_Log, "\n");
+  printf("\n");
 
   for ( i = POINT_MIN; i <= POINT_MAX; i++ ) {
     //----  結果表の役名の表示
     switch( i ) {
-      case 9: my_printf(Result_Log, "ロイヤルストレート   "); break;
-      case 8: my_printf(Result_Log, "ストレートフラッシュ "); break;
-      case 7: my_printf(Result_Log, "フォーカード         "); break;
-      case 6: my_printf(Result_Log, "フルハウス           "); break;
-      case 5: my_printf(Result_Log, "フラッシュ           "); break;
-      case 4: my_printf(Result_Log, "ストレート           "); break;
-      case 3: my_printf(Result_Log, "スリーカード         "); break;
-      case 2: my_printf(Result_Log, "ツーペア             "); break;
-      case 1: my_printf(Result_Log, "ワンペア             "); break;
-      case 0: my_printf(Result_Log, "ノーペア             "); break;
+      case 9: printf("ロイヤルストレート   "); break;
+      case 8: printf("ストレートフラッシュ "); break;
+      case 7: printf("フォーカード         "); break;
+      case 6: printf("フルハウス           "); break;
+      case 5: printf("フラッシュ           "); break;
+      case 4: printf("ストレート           "); break;
+      case 3: printf("スリーカード         "); break;
+      case 2: printf("ツーペア             "); break;
+      case 1: printf("ワンペア             "); break;
+      case 0: printf("ノーペア             "); break;
       default : break;
     }
     for ( j = 0; j < TAKE; j++ ) {
       //----  結果表の役頻度の表示
-      my_printf_i(Result_Log, "|%6d", deg[i][j]);
+      printf("|%6d", deg[i][j]);
       if( j == TAKE-1 ) {
-        my_printf_i(Result_Log, "|%6d", sum[i]);
+        printf("|%6d", sum[i]);
       }
     }
-    my_printf(Result_Log, "\n");
+    printf("\n");
   }
 
   //-----  結果表の区切線の表示
-  my_printf(Result_Log, "---------------------");
+  printf("---------------------");
   for( i = 0; i <= TAKE; i++ ) {
-    my_printf(Result_Log, "+------");
+    printf("+------");
   }
-  my_printf(Result_Log, "\n");
+  printf("\n");
 
   //----  
-  my_printf(Result_Log, "単純素点             ");
+  printf("単純素点             ");
   for ( j = 0; j < TAKE; j++ ) {
-    my_printf_d(Result_Log, "|%6.2f", scr[j] / Trial);
+    printf("|%6.2f", scr[j] / Trial);
   }
-  my_printf(Result_Log, "|\n");
+  printf("|\n");
 
   //----  
-  my_printf(Result_Log, "傾斜得点             ");
+  printf("傾斜得点             ");
   for ( j = 0; j < TAKE; j++ ) {
-    my_printf_d(Result_Log, "|%6.2f", scr[j] * Take_Weight[j]/Trial);
+    printf("|%6.2f", scr[j] * Take_Weight[j]/Trial);
     total += scr[j] * Take_Weight[j];
   }
-  my_printf_d(Result_Log, "|%6.2f\n", total / Trial);
+  printf("|%6.2f\n", total / Trial);
 }
 
 
@@ -506,116 +414,5 @@ int poker_point_straight(int num[], int p)
 
   //----  
   return 0;
-}
-
-
-//====================================================================
-//  ファイル処理
-//====================================================================
-
-//--------------------------------------------------------------------
-//  ログディレクトリの作成
-//--------------------------------------------------------------------
-
-void make_dir(void) 
-{
-  char command[COMM_LEN];         // システムコマンド
-  DIR *log_dir;                   // ログディレクトリ
-
-  //----  ログディレクトリへのパス
-  // strcpy(Dir, "..\\..\\log\\");
-  strcpy(Dir, "./log/");
-  strcat(Dir, Name);
-
-  //----  ログディレクトリの有無
-  if ( (log_dir = opendir(Dir)) == NULL ) {
-    //----  ログディレクトリの作成(mdコマンドの呼出)
-    strcpy(command, "mkdir ");
-    strcat(command, Dir);
-    system(command);
-  }
-}
-
-//--------------------------------------------------------------------
-//  ログファイルの作成
-//--------------------------------------------------------------------
-
-void make_log(void) 
-{
-  char path1[FILE_NAME_LEN];            // Game.logへのパス
-  char path2[FILE_NAME_LEN];            // Result.txtへのパス
-  char path3[FILE_NAME_LEN];            // Stock.iniへのパス
-  char command[COMM_LEN];               // システムコマンド
-
-  //---- Game.logへのパスを作成
-  strcpy(path1, Dir); 
-  strcat(path1, "/Game.log");
-
-  //---- Result.txtへのパスを作成
-  strcpy(path2, Dir); 
-  strcat(path2, "/Result.txt");
-
-  //---- Stock.iniへのパスを作成
-  strcpy(path3, Dir); 
-  strcat(path3, "/Stock.ini"); 
-
-  //---- Game.logのオープン
-  if( (Game_Log = fopen(path1, "w")) == NULL ) {
-    printf("Game.logをオープンできない\n");
-    exit(1);
-  }
-
-  //---- Result.txtのオープン
-  if( (Result_Log = fopen(path2, "w")) == NULL ) {
-    printf("Result.txtをオープンできない\n");
-    exit(1);
-  }
-
-  //---- Stock.iniのコピー(copyコマンドの呼出)
-  strcpy(command, "cp ");
-  strcat(command, Stck);
-  strcat(command, " ");
-  strcat(command, path3);
-  system(command);
-}
-
-//--------------------------------------------------------------------
-//  標準出力とファイル出力
-//--------------------------------------------------------------------
-
-//----  標準出力＋ファイル出力
-void my_printf(FILE *fp, char st[]) 
-{
-  printf("%s", st);
-#ifndef IGNORE_LOG
-  fprintf(fp, "%s", st);
-#endif
-}
-
-//----  標準出力＋ファイル出力(char型の配列)
-void my_printf_c(FILE *fp, char st[], char x[]) 
-{
-  printf(" >%s", x);
-#ifndef IGNORE_LOG
-  fprintf(fp, " >%s", x);
-#endif
-}
-
-//----  標準出力＋ファイル出力(int型)
-void my_printf_i(FILE *fp, char st[], int x) 
-{
-  printf(st, x);
-#ifndef IGNORE_LOG
-  fprintf(fp, st, x);
-#endif
-}
-
-//----  標準出力＋ファイル出力(double型)
-void my_printf_d(FILE *fp, char st[], double x) 
-{
-  printf(st, x);
-#ifndef IGNORE_LOG
-  fprintf(fp, st, x);
-#endif
 }
 

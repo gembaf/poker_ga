@@ -1,16 +1,4 @@
 //====================================================================
-//  工学部「情報環境実験２」(富永)  C言語プログラミング  例題
-//  ポーカーゲームの戦略  ヘッダファイル
-//--------------------------------------------------------------------
-//  Poker  Poker.h
-//  WinXP DOS  Borland C/C++ 5.5
-//--------------------------------------------------------------------
-//  富永研究室  tominaga 富永浩之
-//  2013.10.22
-//====================================================================
-
-
-//====================================================================
 //  事前処理
 //====================================================================
 
@@ -81,7 +69,6 @@ void arr_output(int arr[], int n);
 //--------------------------------------------------------------------
 
 void card_show(int cd[], int n);
-void card_show_log(FILE *fp, int cd[], int n);
 char *card_str(int id);
 int card_id(char *str);
 
@@ -98,7 +85,6 @@ void card_stock(int stock[], FILE *fp);
 double poker_exec(FILE *fp, int point[]);
 int poker_take(const int stock[], int tk, int used[], int *us);
 void take_show(int st[][HNUM], int ope[], int fd[], int cg, int tp);
-void take_log(FILE *fp, int st[][HNUM], int ope[], int fd[], int cg, int tp);
 #ifdef TAKE
 void result_show(int point[][TAKE]);
 #endif
