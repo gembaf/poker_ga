@@ -52,11 +52,6 @@ double poker_exec(FILE *fp, int point[])
     try_p += point[tk] * Take_Weight[tk];
   }
 
-  // トライ得点の表示
-  if ( Disp_Mode ) {
-    printf("トライ得点 : %4f\n", try_p);
-  }
-
   return try_p;
 }
 
@@ -108,11 +103,7 @@ int poker_take(const int stock[], int tk, int used[], int *us)
   }
 
   //----  テイクの経過表示
-  if ( Disp_Mode ) {
-    take_show(state, ope, field, cg, take_p);
-    printf("テイク素点 : %4d\n", take_p);
-    printf("テイク得点 : %4f\n", take_p*Take_Weight[tk]);
-  }
+  if ( Disp_Mode ) { take_show(state, ope, field, cg, take_p); }
 
   return take_p;
 }
@@ -128,15 +119,16 @@ int poker_take(const int stock[], int tk, int used[], int *us)
 void take_show(int st[][HNUM], int ope[], int fd[], int cg, int tp)
 {
   int k;
-  int p;
-  for ( k = 0; k <= cg; k++ ) {
-    //----  手札の表示
-    printf("[%d] ", k);
+  int i;
+
+  for ( k = 0; k < cg; k++ ) {
     card_show(st[k], HNUM);
-    //----  捨札の表示
-    if ( k < cg ) { printf(" >%s", card_str(ope[k])); }
-    printf("\n");
+    for ( i = 0; i < HNUM; i++ ) {
+      if ( ope[k] == st[k][i] ) { printf(">%d,", i); break; }
+    }
   }
+  card_show(st[k], HNUM);
+  printf("|-1\n");
 }
 
 //--------------------------------------------------------------------
@@ -149,7 +141,6 @@ void result_show(int point[][TAKE])
   int deg[POINT_NUM][TAKE];
   int sum[POINT_NUM];
   double scr[TAKE] = {0.0};
-  double total = 0.0;
 
   //----  配列の初期化
   for( k = POINT_MIN; k <= POINT_MAX; k++ ) {
@@ -185,20 +176,36 @@ void result_show(int point[][TAKE])
       scr[j] += deg[k][j] * Hand_Value[k];
     }
   }
-  puts("");
+
+  //----  結果テーブルの表示
+#ifdef RICH
+  result_table(deg, sum, scr);
+#else
+  result_csv(deg, sum, scr);
+#endif
+}
+
+//--------------------------------------------------------------------
+//  結果テーブルの表示
+//--------------------------------------------------------------------
+
+void result_table(int deg[][TAKE], int sum[], double scr[])
+{
+  int i, j;
+  double total = 0.0;
 
   //----  結果表のテイク番号の表示
   printf("        役名         ");
   for( i = 0; i < TAKE; i++ ) {
     printf("| take%d", i+1);
   }
-  printf("|  合計  \n");
+  puts("|  合計  ");
   //-----  結果表の区切線の表示
   printf("---------------------");
   for( i = 0; i <= TAKE; i++ ) {
     printf("+------");
   }
-  printf("\n");
+  puts("");
 
   for ( i = POINT_MIN; i <= POINT_MAX; i++ ) {
     //----  結果表の役名の表示
@@ -222,20 +229,20 @@ void result_show(int point[][TAKE])
         printf("|%6d", sum[i]);
       }
     }
-    printf("\n");
+    puts("");
   }
 
   printf("---------------------");
   for( i = 0; i <= TAKE; i++ ) {
     printf("+------");
   }
-  printf("\n");
+  puts("");
 
   printf("単純素点             ");
   for ( j = 0; j < TAKE; j++ ) {
     printf("|%6.2f", scr[j] / Trial);
   }
-  printf("|\n");
+  puts("|");
 
   printf("傾斜得点             ");
   for ( j = 0; j < TAKE; j++ ) {
@@ -243,6 +250,40 @@ void result_show(int point[][TAKE])
     total += scr[j] * Take_Weight[j];
   }
   printf("|%6.2f\n", total / Trial);
+}
+
+//--------------------------------------------------------------------
+//  結果CSVの表示
+//--------------------------------------------------------------------
+
+void result_csv(int deg[][TAKE], int sum[], double scr[])
+{
+  int i, j;
+  double total = 0.0;
+
+  for ( i = POINT_MIN; i <= POINT_MAX; i++ ) {
+    for ( j = 0; j < TAKE; j++ ) {
+      //----  結果表の役頻度の表示
+      printf("%d,", deg[i][j]);
+      if( j == TAKE-1 ) {
+        printf("%d", sum[i]);
+      }
+    }
+    puts("");
+  }
+
+  for ( j = 0; j < TAKE; j++ ) {
+    printf("%.2f,", scr[j] / Trial);
+    total += scr[j];
+  }
+  printf("%.2f\n", total / Trial);
+
+  total = 0.0;
+  for ( j = 0; j < TAKE; j++ ) {
+    printf("%.2f,", scr[j] * Take_Weight[j]/Trial);
+    total += scr[j] * Take_Weight[j];
+  }
+  printf("%.2f\n", total / Trial);
 }
 
 //====================================================================

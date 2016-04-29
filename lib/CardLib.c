@@ -83,10 +83,11 @@ void card_stock(int stock[], FILE *fp)
 void card_show(int cd[], int n)
 {
   int k;
-  for ( k = 0; k < n; k++ ) {
+  for ( k = 0; k < n-1; k++ ) {
     if ( cd[k] < 0 ) { continue; }
-    printf("%s ", card_str(cd[k]));
+    printf("%d ", cd[k]);
   }
+  printf("%d", cd[k]);
 }
 
 //====================================================================
