@@ -85,6 +85,8 @@ int poker_take(const int stock[], int tk, int used[], int *us);
 void take_show(int st[][HNUM], int ope[], int fd[], int cg, int tp);
 #ifdef TAKE
 void result_show(int point[][TAKE]);
+void result_table(int deg[][TAKE], int sum[], double scr[]);
+void result_csv(int deg[][TAKE], int sum[], double scr[]);
 #endif
 
 //--------------------------------------------------------------------

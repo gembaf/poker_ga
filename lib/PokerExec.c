@@ -66,17 +66,15 @@ int main(int argc, char *argv[])
 
   //----  トライ回数だけのゲームの反復
   total = 0.0;
-  for ( k = 0; k < Trial; k++ ) {
+  for ( k = 0; k < Trial-1; k++ ) {
     total += poker_exec(fp, point[k]);
+    if ( Disp_Mode ) { puts("===TAKE==="); }
   }
+  total += poker_exec(fp, point[k]);
 
   //----  結果表の出力
+  puts("");
   result_show(point);
-
-  //----  平均点の出力
-  ave = (double) total / Trial;
-  printf("\n");
-  printf("平均得点 :  %lf\n", ave);
 
   //----  終了
   return 0;
