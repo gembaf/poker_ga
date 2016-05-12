@@ -1,5 +1,6 @@
 /PokerExec
-/Stock.ini
-/StockInit
+/PokerExecGA
+/Deck.txt
+/DeckInit
 /log/**/*
 

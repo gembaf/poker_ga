@@ -80,7 +80,6 @@ void card_stock(int stock[], FILE *fp);
 //  ポーカーの進行
 //--------------------------------------------------------------------
 
-double poker_exec(FILE *fp, int point[]);
 int poker_take(const int stock[], int tk, int used[], int *us);
 void take_show(int st[][HNUM], int ope[], int fd[], int cg, int tp);
 #ifdef TAKE

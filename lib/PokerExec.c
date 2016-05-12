@@ -18,10 +18,12 @@
 //====================================================================
 
 extern int Trial;                        // トライ回数
-extern char Stck[FILE_NAME_LEN];         // 山札ファイル
+extern char Deck[FILE_NAME_LEN];         // 山札ファイル
 extern int Disp_Mode;                    // 表示モード
 extern int Hand_Value[10];
 extern double Take_Weight[10];
+
+double poker_exec(FILE *fp, int point[]);
 
 //====================================================================
 //  本体関数
@@ -45,7 +47,7 @@ int main(int argc, char *argv[])
 
   //----  コマンド引数の格納
   Trial = atoi(argv[1]);    // トライ回数
-  strcpy(Stck, argv[2]);    // 山札ファイル
+  strcpy(Deck, argv[2]);    // 山札ファイル
   Disp_Mode = atoi(argv[3]);     // 表示モード
 
   //----  トライ回数の確認
@@ -55,7 +57,7 @@ int main(int argc, char *argv[])
   }
 
   //----  山札ファイルのオープンとエラー処理
-  fp = fopen(Stck, "r");
+  fp = fopen(Deck, "r");
   if ( fp == NULL ) {
     puts("ERROR : 山札ファイルの指定が不正です。");
     exit(EXIT_FAILURE);
@@ -78,5 +80,32 @@ int main(int argc, char *argv[])
 
   //----  終了
   return 0;
+}
+
+//--------------------------------------------------------------------
+//  各トライの進行
+//--------------------------------------------------------------------
+
+double poker_exec(FILE *fp, int point[])
+{
+  //----  局所変数
+  int stock[CNUM];            // 山札
+  int used[CNUM];             // 捨札配列
+  int us;                     // 捨札数
+  double try_p;               // トライ得点
+  int tk;                     // テイク数
+
+  //----  トライの準備
+  card_stock(stock, fp);      // 山札の生成
+
+  //----  トライの最中(テイクを繰り返す)
+  us = 0;
+  try_p = 0;
+  for ( tk = 0; tk < TAKE; tk++ ) {
+    point[tk] = poker_take(stock, tk, used, &us);
+    try_p += point[tk] * Take_Weight[tk];
+  }
+
+  return try_p;
 }
 
