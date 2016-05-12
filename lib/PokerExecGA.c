@@ -137,6 +137,7 @@ void ga_exec(int deck[][CNUM])
     fprintf(stderr, "\n");
   }
   fprintf(stderr, "}\n");
+  // printf("%5d : %8.3f %8.3f\n", k1, elite.fit, sum);
 }
 
 //----------------------------------------------------------
@@ -169,7 +170,7 @@ Genome ga_stock_exec(int stock[])
 
     //----  世代交代
     generation_change(parent, child);
-
+    set_fitness(parent, POPSIZE, stock);
     free(child);
   }
 
@@ -210,9 +211,6 @@ void initialize(Genome parent[], int stock[])
 
   for ( k1 = 0; k1 < POPSIZE; k1++ ) {
     for ( k2 = 0; k2 < STEP; k2++ ) { parent[k1].gene[k2] = myrand(); }
-    arr_copy(Step, parent[k1].gene, STEP);
-    StepCounter = 0;
-    parent[k1].fit = poker_exec(stock);
   }
   set_fitness(parent, POPSIZE, stock);
 }
@@ -224,8 +222,7 @@ void initialize(Genome parent[], int stock[])
 void set_fitness(Genome g[], int n, int stock[])
 {
   int k;
-  double sum = 0;
-  double ave;
+
   for ( k = 0; k < n; k++ ) {
     arr_copy(Step, g[k].gene, STEP);
     StepCounter = 0;
@@ -267,8 +264,8 @@ Genome selection_roulette(Genome g[], int n)
 
 void crossover(Genome parent[], Genome *c1, Genome *c2)
 {
-  Genome g1 = selection(parent, POPSIZE);
-  Genome g2 = selection(parent, POPSIZE);
+  Genome g1 = parent[irand(POPSIZE)];
+  Genome g2 = parent[irand(POPSIZE)];
 
   if ( irand(100) < PROB_C ) { crossover_double(&g1, &g2); }
   *c1 = g1; *c2 = g2;
@@ -333,10 +330,22 @@ Genome get_elite(Genome g[], int n)
 void generation_change(Genome parent[], Genome child[])
 {
   int k;
+  int size = POPSIZE / 2;
 
+  //----  エリートは必ず次世代へ
   parent[0] = get_elite(parent, POPSIZE);
-  for ( k = 1; k < POPSIZE; k++ ) {
+
+  //----  半分は親世代から引き継ぎ
+  for ( k = 1; k < size; k++ ) {
     parent[k] = selection(child, POPSIZE);
+  }
+
+  //----  半分は新しい個体が参入
+  for ( ; k < POPSIZE; k++ ) {
+    int i;
+    for ( i = 0; i < STEP; i++ ) {
+      parent[k].gene[i] = myrand();
+    }
   }
 }
 
