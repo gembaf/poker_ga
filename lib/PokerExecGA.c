@@ -17,7 +17,7 @@
 #define STEP (HNUM * (CHNG+1))   // TAKE数分を余分に取っておく
 
 #define POPSIZE 200
-#define GEN 5000
+#define GEN 10000
 #define PROB_C 85
 #define PROB_M 5
 
@@ -125,18 +125,18 @@ void ga_exec(int deck[][CNUM])
   int k1, k2;
   double sum = 0;
 
-  fprintf(stderr, "{\n");
-  for ( k1 = 0; k1 < DECK; k1++ ) {
+  // fprintf(stderr, "{\n");
+  for ( k1 = 0; k1 < DECK; k1 += 100 ) {
     Genome elite;
     elite = ga_stock_exec(deck[k1]);
 
     sum *= (double)k1 / (k1+1);
     sum += elite.fit / (k1+1);
-    printf("%5d : %8.3f %8.3f\n", k1, elite.fit, sum);
-    for ( k2 = 0; UsedFlag[k2] ; k2++ ) { fprintf(stderr, "%d,", Step[k2]); }
-    fprintf(stderr, "\n");
+    // printf("%5d : %8.3f %8.3f\n", k1, elite.fit, sum);
+    // for ( k2 = 0; UsedFlag[k2] ; k2++ ) { fprintf(stderr, "%d,", Step[k2]); }
+    // fprintf(stderr, "\n");
   }
-  fprintf(stderr, "}\n");
+  // fprintf(stderr, "}\n");
   // printf("%5d : %8.3f %8.3f\n", k1, elite.fit, sum);
 }
 
@@ -172,9 +172,15 @@ Genome ga_stock_exec(int stock[])
     generation_change(parent, child);
     set_fitness(parent, POPSIZE, stock);
     free(child);
-  }
 
-  elite = get_elite(parent, POPSIZE);
+    //----  過程の出力
+    if ( gen%100 == 0 ) {
+      elite = get_elite(parent, POPSIZE);
+      printf("%d,%.3f\n", gen, elite.fit);
+    }
+  }
+  puts("");
+
   free(parent);
   return elite;
 }
