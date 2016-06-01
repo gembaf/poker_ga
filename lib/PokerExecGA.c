@@ -14,7 +14,7 @@
 #include "Poker.h"
 
 #define DECK 10000
-#define STEP (HNUM * (CHNG+1))   // TAKE数分を余分に取っておく
+#define STEP (CNUM + TAKE)  // TAKE数分を余分に取っておく
 
 #define POPSIZE 200
 #define GEN 10000

@@ -35,7 +35,7 @@ double Take_Weight[10] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
 int poker_take(const int stock[], int tk, int used[], int *us)
 {
   //----  局所変数
-  int field[FNUM];            // 場札
+  int field[CHNG];            // 場札
   int hand[HNUM];             // 手札
   int state[CHNG+1][HNUM];    // 局面(手札の列)
   int ope[CHNG];              // 打手札

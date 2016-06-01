@@ -9,7 +9,6 @@
 #define  GNUM  10000    // ゲーム最大回数
 #define  CNUM     52    // カードの枚数
 #define  HNUM      5    // 手札の枚数
-#define  FNUM     10    // 場札の最大枚数(5×2)
 
 #define GAME_NAME_LEN 256    // ゲームのインスタンス名の最大長
 #define FILE_NAME_LEN 256    // ファイル名の最大長
